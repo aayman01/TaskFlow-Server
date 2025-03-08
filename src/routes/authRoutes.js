@@ -9,7 +9,7 @@ router.post("/register", register);
 // login route
 router.post("/login", passport.authenticate("local"), login);
 // auth status route
-router.post("/status", authStatus);
+router.get("/status", authStatus);
 // log out route
 router.post("/logout", logout);
 // 2Fa setup
