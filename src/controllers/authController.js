@@ -62,6 +62,7 @@ export const logout = async (req, res) => {
     });
   }
 };
+
 export const setup2FA = async (req, res) => {
   try {
     console.log("the user is:", req.user);
@@ -89,19 +90,41 @@ export const verify = async (req, res) => {
   try {
     const { token } = req.body;
     const user = req.user;
+
     const verified = speakeasy.totp.verify({
       secret: user.twoFactorSecret,
       encoding: "base32",
-      token,
+      token: token,
     });
+    
+    // console.log("Verification attempt:", {
+    //   secret: user.twoFactorSecret,
+    //   token: token,
+    //   verified: verified
+    // });
+
     if (verified) {
-      const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
+      const jwtToken = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
         expiresIn: "1h",
       });
-      res.status(200).json({ message: "2FA Verified Successfully", token });
+      res.status(200).json({ message: "2FA Verified Successfully", token: jwtToken });
     } else {
       res.status(401).json({ message: "Invalid Token" });
     }
-  } catch (error) {}
+  } catch (error) {
+    // console.error("2FA Verification error:", error);
+    res.status(500).json({ error: "Error verifying 2FA", message: error.message });
+  }
 };
-export const reset = async () => {};
+export const reset = async (req,res) => {
+    try {
+        const user = req.user;
+        user.twoFactorSecret = "";
+        user.isFaActive = false;
+        await user.save();
+        res.status(200).json({message: "2FA Reset Successfully"});
+    } catch (error) {
+        res.status(500)
+      .json({ error: "Error resetting 2FA", message: error.message });
+    }
+};
