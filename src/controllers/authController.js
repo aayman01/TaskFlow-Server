@@ -1,5 +1,8 @@
 import bcrypt from "bcryptjs";
 import User from "../models/user.js";
+import speakeasy from "speakeasy";
+import QRCode from "qrcode";
+import jwt from "jsonwebtoken";
 
 export const register = async (req, res) => {
   try {
@@ -59,6 +62,46 @@ export const logout = async (req, res) => {
     });
   }
 };
-export const setup2FA = async () => {};
-export const verify = async () => {};
+export const setup2FA = async (req, res) => {
+  try {
+    console.log("the user is:", req.user);
+    const user = req.user;
+    var secret = speakeasy.generateSecret();
+    console.log("The secret is:", secret);
+    user.twoFactorSecret = secret.base32;
+    user.isFaActive = true;
+    await user.save();
+    const url = speakeasy.otpauthURL({
+      secret: secret.base32,
+      label: user.email,
+      issuer: "TaskFlow@gmail.com",
+      encoding: "base32",
+    });
+    const qrImg = await QRCode.toDataURL(url);
+    res.json({ qrCode: qrImg, secret: secret.base32 });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error setting up 2FA", message: error.message });
+  }
+};
+export const verify = async (req, res) => {
+  try {
+    const { token } = req.body;
+    const user = req.user;
+    const verified = speakeasy.totp.verify({
+      secret: user.twoFactorSecret,
+      encoding: "base32",
+      token,
+    });
+    if (verified) {
+      const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+      res.status(200).json({ message: "2FA Verified Successfully", token });
+    } else {
+      res.status(401).json({ message: "Invalid Token" });
+    }
+  } catch (error) {}
+};
 export const reset = async () => {};
