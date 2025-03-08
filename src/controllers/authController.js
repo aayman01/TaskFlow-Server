@@ -26,7 +26,20 @@ export const login = async (req, res) => {
       isFaActive: req.user.isFaActive,
     });
 };
-export const authStatus = async () => {};
+export const authStatus = async (req, res) => {
+    if(req.user) {
+       res.status(200).json({
+         message: "User Logged In Successfully",
+         email: req.user.email,
+         isFaActive: req.user.isFaActive,
+       });
+    }
+    else{
+        res.status(400).json({
+            message: "Unauthorized User"
+        })
+    }
+};
 export const logout = async () => {};
 export const setup2FA = async () => {};
 export const verify = async () => {};
