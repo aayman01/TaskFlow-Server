@@ -4,7 +4,8 @@ import cors from "cors";
 import passport from "passport";
 import session from "express-session"
 import dbConnect from "./config/dbConnect.js";
-import authRoutes from "./routes/authRoutes.js"
+import authRoutes from "./routes/authRoutes.js";
+import './config/passportConfig.js'
 
 
 dotenv.config();

@@ -18,7 +18,14 @@ export const register = async (req, res) => {
         res.status(500).json({error: "Error Registering User", message: error.message })
     }
 };
-export const login = async () => {};
+export const login = async (req, res) => {
+    console.log("The authenticated user is:", req.user);
+    res.status(200).json({
+      message: "User Logged In Successfully",
+      email: req.user.email,
+      isFaActive: req.user.isFaActive,
+    });
+};
 export const authStatus = async () => {};
 export const logout = async () => {};
 export const setup2FA = async () => {};
