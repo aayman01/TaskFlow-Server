@@ -22,6 +22,7 @@ export const register = async (req, res) => {
       email,
       password: hashedPassword,
       isFaActive: false,
+      isEmailVerified: false,
     });
     // console.log("new user:", newUser);
     await newUser.save();
@@ -93,12 +94,11 @@ export const verifyEmailCode = async (req, res) => {
       });
     }
 
-    const jwtToken = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    // const jwtToken = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
+    //   expiresIn: "1h",
+    // });
     res.status(200).json({
       message: "Code verified successfully",
-      token: jwtToken,
       user: {
         email: user.email,
         isFaActive: user.isFaActive
@@ -171,13 +171,15 @@ export const setup2FA = async (req, res) => {
 export const verify = async (req, res) => {
   try {
     const { token } = req.body;
+    // console.log("the token is:", token);
     const user = req.user;
 
     const verified = speakeasy.totp.verify({
       secret: user.twoFactorSecret,
       encoding: "base32",
       token: String(token),
-      window: 2
+      algorithm: "sha1",
+      window: 5,
     });
 
     if (verified) {
@@ -206,6 +208,7 @@ export const reset = async (req,res) => {
         const user = req.user;
         user.twoFactorSecret = "";
         user.isFaActive = false;
+        user.isEmailVerified = false;
         await user.save();
         res.status(200).json({message: "2FA Reset Successfully"});
     } catch (error) {
