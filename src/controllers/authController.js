@@ -128,19 +128,21 @@ export const logout = async (req, res) => {
     res.status(401).json({
       message: "Unauthorized user",
     });
-  } else {
-    req.logout((err) => {
-      if (err) {
-        res.status(500).json({
-          message: "Error Logging Out",
-        });
-      } else {
-        res.status(200).json({
-          message: "User Logged Out Successfully",
-        });
+  } 
+  req.logout((err)=>{
+    if(err){
+      return next(err)
+    }
+    req.session.destroy((err)=>{
+      if(err){
+        return next(err)
       }
-    });
-  }
+      res.clearCookie("connect.sid");
+      res.status(200).json({
+        message: "User Logged Out Successfully"
+      })
+    })
+  })
 };
 
 export const setup2FA = async (req, res) => {
