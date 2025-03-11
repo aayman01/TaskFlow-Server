@@ -5,6 +5,7 @@ import passport from "passport";
 import session from "express-session"
 import dbConnect from "./config/dbConnect.js";
 import authRoutes from "./routes/authRoutes.js";
+import todoRoutes from "./routes/todoRoutes.js";
 import './config/passportConfig.js'
 
 
@@ -15,7 +16,10 @@ const app = express();
 
 // middleware
 const corsOptions = {
-  origin: ["http://localhost:5173"],
+  origin: [
+    "http://localhost:5173",
+    "https://thunderous-truffle-ccef1f.netlify.app",
+  ],
   credentials: true,
 };
 app.use(cors(corsOptions));
@@ -34,6 +38,7 @@ app.use(passport.session());
 
 // Routes
 app.use("/api/auth", authRoutes)
+app.use("/api/todo", todoRoutes)
 app.get('/',(req, res)=>{
     res.send("server is running")
 })

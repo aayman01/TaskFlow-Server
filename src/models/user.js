@@ -27,6 +27,14 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       required: false,
     },
+    // googleAuth: {
+    //   accessToken: String,
+    //   refreshToken: String,
+    //   isConnected: {
+    //     type: Boolean,
+    //     default: false
+    //   }
+    // }
   },
   {
     timestamps: true,

@@ -67,7 +67,9 @@ export const login = async (req, res) => {
 export const verifyEmailCode = async (req, res) => {
   try {
     const { code } = req.body;
+    console.log("the code is:", code);
     const user = req.user;
+    console.log("the user is:", user);
 
     if (!user.emailVerificationCode || !user.emailVerificationCode.code) {
       return res.status(400).json({ message: "No verification code found" });
@@ -123,12 +125,13 @@ export const authStatus = async (req, res) => {
   }
 };
 
-export const logout = async (req, res) => {
+export const logout = async (req, res, next) => {
   if (!req.user) {
-    res.status(401).json({
+    return res.status(401).json({
       message: "Unauthorized user",
     });
   } 
+  
   req.logout((err)=>{
     if(err){
       return next(err)

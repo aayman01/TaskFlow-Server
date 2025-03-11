@@ -1,14 +1,14 @@
 import { Router } from "express";
 import passport from "passport";
-import { 
-  authStatus, 
-  login, 
+import {
+  authStatus,
+  login,
   verifyEmailCode,
-  logout, 
-  register, 
-  reset, 
-  setup2FA, 
-  verify 
+  logout,
+  register,
+  reset,
+  setup2FA,
+  verify,
 } from "../controllers/authController.js";
 
 const router = Router();
@@ -20,7 +20,8 @@ router.post("/register", register);
 router.post("/login", passport.authenticate("local"), login);
 
 // Email verification route
-router.post("/verify-email", 
+router.post(
+  "/verify-email",
   (req, res, next) => {
     if (req.isAuthenticated()) return next();
     res.status(401).json({ message: "Unauthorized" });
@@ -30,17 +31,23 @@ router.post("/verify-email",
 
 // auth status route
 router.get("/status", authStatus);
+
 // log out route
-router.post("/logout", logout); 
+router.post("/logout", logout);
 
 // 2Fa setup
-router.post("/2fa/setup",(req, res, next) =>{
-    if(req.isAuthenticated()) return next();
-    res.status(401).json({message: "Unauthorized setup"});
-} ,setup2FA);
+router.post(
+  "/2fa/setup",
+  (req, res, next) => {
+    if (req.isAuthenticated()) return next();
+    res.status(401).json({ message: "Unauthorized setup" });
+  },
+  setup2FA
+);
 
 // 2FA verification route
-router.post("/2fa/verify",
+router.post(
+  "/2fa/verify",
   (req, res, next) => {
     if (req.isAuthenticated()) return next();
     res.status(401).json({ message: "Unauthorized verify" });

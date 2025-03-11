@@ -1,5 +1,5 @@
 {
-  "name": "taskflow-server",
+  "name": "mksflow-server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
